@@ -1,0 +1,6948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Queue & Appointment Manager</title>
+
+<style>
+:root{
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+    --purple:#7c3aed;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --warning:#d97706;
+    --dark:#0f172a;
+    --sidebar:#0b1220;
+    --bg:#f1f5f9;
+    --white:#ffffff;
+    --border:#e2e8f0;
+    --muted:#64748b;
+    --text:#0f172a;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+button,input,select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* ================= AUTH ================= */
+
+.auth-page{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    background:
+        radial-gradient(circle at 10% 20%,rgba(37,99,235,.25),transparent 30%),
+        radial-gradient(circle at 90% 80%,rgba(124,58,237,.22),transparent 30%),
+        linear-gradient(135deg,#0f172a,#1e3a8a);
+}
+
+.auth-card{
+    width:100%;
+    max-width:500px;
+    background:#fff;
+    border-radius:24px;
+    padding:35px;
+    box-shadow:0 25px 80px rgba(0,0,0,.3);
+}
+
+.logo-icon{
+    width:64px;
+    height:64px;
+    margin:0 auto 15px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    color:white;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+}
+
+.brand{
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.brand h1{
+    color:#172554;
+    font-size:30px;
+    margin-bottom:7px;
+}
+
+.brand p{
+    color:var(--muted);
+    font-size:14px;
+}
+
+.auth-title{
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:18px;
+}
+
+.input{
+    width:100%;
+    padding:13px 14px;
+    margin-bottom:12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fff;
+}
+
+.input:focus{
+    border-color:var(--primary);
+    outline:none;
+    box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+
+.btn{
+    border:none;
+    border-radius:10px;
+    padding:12px 16px;
+    font-weight:bold;
+}
+
+.btn-primary{
+    background:var(--primary);
+    color:#fff;
+}
+
+.btn-primary:hover{
+    background:var(--primary-dark);
+}
+
+.btn-purple{
+    background:var(--purple);
+    color:#fff;
+}
+
+.btn-success{
+    background:var(--success);
+    color:#fff;
+}
+
+.btn-danger{
+    background:var(--danger);
+    color:#fff;
+}
+
+.btn-warning{
+    background:var(--warning);
+    color:#fff;
+}
+
+.btn-secondary{
+    background:#e2e8f0;
+    color:#0f172a;
+}
+
+.btn-full{
+    width:100%;
+}
+
+.auth-links{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:16px;
+}
+
+.link-btn{
+    background:none;
+    border:none;
+    color:var(--primary);
+    font-weight:bold;
+}
+
+.link-btn:hover{
+    text-decoration:underline;
+}
+
+.message{
+    min-height:22px;
+    margin-top:12px;
+    text-align:center;
+    font-size:14px;
+}
+
+.note{
+    margin-top:18px;
+    background:#eff6ff;
+    color:#1e40af;
+    border:1px solid #bfdbfe;
+    border-radius:10px;
+    padding:12px;
+    font-size:12px;
+    line-height:1.5;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+    height:72px;
+    position:sticky;
+    top:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 24px;
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    box-shadow:0 3px 12px rgba(15,23,42,.05);
+}
+
+.topbar-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.topbar-icon{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#dbeafe;
+    color:#1d4ed8;
+    font-size:20px;
+}
+
+.topbar-title{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.topbar-sub{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:2px;
+}
+
+.topbar-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.avatar{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background:#dbeafe;
+    color:#1e40af;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+}
+
+.user-info{
+    text-align:right;
+}
+
+.user-info strong{
+    display:block;
+    font-size:13px;
+}
+
+.user-info span{
+    color:var(--muted);
+    font-size:11px;
+}
+
+.logout-btn{
+    border:none;
+    background:#fee2e2;
+    color:#991b1b;
+    padding:10px 14px;
+    border-radius:9px;
+    font-weight:bold;
+}
+
+/* ================= LAYOUT ================= */
+
+.layout{
+    display:flex;
+    min-height:calc(100vh - 72px);
+}
+
+.sidebar{
+    width:245px;
+    background:var(--sidebar);
+    padding:20px 12px;
+    flex-shrink:0;
+}
+
+.menu-title{
+    color:#64748b;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    padding:10px 13px;
+}
+
+.nav-btn{
+    width:100%;
+    border:none;
+    background:transparent;
+    color:#cbd5e1;
+    padding:12px 14px;
+    border-radius:10px;
+    text-align:left;
+    margin-bottom:5px;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.nav-btn:hover{
+    background:#172554;
+    color:white;
+}
+
+.nav-btn.active{
+    background:#2563eb;
+    color:white;
+}
+
+.main{
+    flex:1;
+    min-width:0;
+    padding:28px;
+}
+
+/* ================= PAGE ================= */
+
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:15px;
+    margin-bottom:22px;
+}
+
+.page-header h1{
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.page-header p{
+    color:var(--muted);
+    font-size:14px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:20px;
+    box-shadow:0 6px 18px rgba(15,23,42,.04);
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:16px;
+    margin-bottom:22px;
+}
+
+.stat{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.stat-value{
+    font-size:30px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.welcome{
+    color:white;
+    border:none;
+    background:linear-gradient(135deg,#1d4ed8,#4f46e5);
+}
+
+.welcome h2{
+    margin-bottom:8px;
+    font-size:25px;
+}
+
+.welcome p{
+    font-size:14px;
+    opacity:.93;
+}
+
+/* ================= FORM ================= */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:13px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.form-group.full{
+    grid-column:1/-1;
+}
+
+.form-group label{
+    font-size:12px;
+    color:#475569;
+    font-weight:bold;
+}
+
+.control{
+    width:100%;
+    padding:12px 13px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:#fff;
+}
+
+.control:focus{
+    border-color:var(--primary);
+    outline:none;
+    box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+
+.form-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:16px;
+}
+
+/* ================= TABLE ================= */
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    min-width:760px;
+    border-collapse:collapse;
+}
+
+th{
+    background:#f8fafc;
+    color:#64748b;
+    font-size:12px;
+    padding:12px;
+    text-align:left;
+    border-bottom:1px solid var(--border);
+}
+
+td{
+    padding:13px 12px;
+    border-bottom:1px solid #f1f5f9;
+    font-size:13px;
+}
+
+tr:hover td{
+    background:#fafcff;
+}
+
+.empty{
+    text-align:center;
+    color:var(--muted);
+    padding:35px;
+}
+
+/* ================= STATUS ================= */
+
+.status{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.waiting{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.confirmed{
+    background:#dbeafe;
+    color:#1e40af;
+}
+
+.serving{
+    background:#ede9fe;
+    color:#5b21b6;
+}
+
+.completed{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.cancelled{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* ================= ACTIONS ================= */
+
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+}
+
+.small{
+    border:none;
+    border-radius:7px;
+    padding:7px 9px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.small-edit{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.small-delete{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* ================= QUEUE ================= */
+
+.queue-box{
+    text-align:center;
+    padding:35px;
+    background:linear-gradient(135deg,#eff6ff,#eef2ff);
+    border:1px solid #bfdbfe;
+    border-radius:18px;
+}
+
+.queue-caption{
+    color:#64748b;
+    font-size:12px;
+}
+
+.queue-number{
+    color:#1d4ed8;
+    font-size:65px;
+    font-weight:900;
+    margin:12px 0;
+}
+
+.queue-current{
+    font-size:14px;
+    font-weight:bold;
+    margin-bottom:16px;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    background:rgba(15,23,42,.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-box{
+    width:100%;
+    max-width:520px;
+    background:#fff;
+    border-radius:18px;
+    padding:25px;
+}
+
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.close-btn{
+    border:none;
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    background:#f1f5f9;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1050px){
+    .stats{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+@media(max-width:800px){
+
+    .sidebar{
+        width:72px;
+        padding:15px 7px;
+    }
+
+    .menu-title{
+        display:none;
+    }
+
+    .nav-btn{
+        justify-content:center;
+        font-size:0;
+        padding:13px 8px;
+    }
+
+    .nav-btn span{
+        font-size:18px;
+    }
+
+    .topbar{
+        padding:0 12px;
+    }
+
+    .topbar-title{
+        font-size:14px;
+    }
+
+    .topbar-sub,
+    .user-info{
+        display:none;
+    }
+
+    .main{
+        padding:17px;
+    }
+}
+
+@media(max-width:600px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .page-header{
+        flex-direction:column;
+    }
+
+    .auth-card{
+        padding:25px 20px;
+    }
+
+    .brand h1{
+        font-size:25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+AUTH SECTION
+========================================================= -->
+
+<section id="authSection" class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="brand">
+
+            <div class="logo-icon">
+                🎫
+            </div>
+
+            <h1>
+                Digital Queue
+            </h1>
+
+            <p>
+                Digital Queue & Appointment Manager
+            </p>
+
+        </div>
+
+
+        <!-- ================= USER LOGIN ================= -->
+
+        <div id="userLoginForm">
+
+            <div class="auth-title">
+                User Login
+            </div>
+
+            <input
+                id="loginEmail"
+                class="input"
+                type="email"
+                placeholder="User email"
+            >
+
+            <input
+                id="loginPassword"
+                class="input"
+                type="password"
+                placeholder="Password"
+            >
+
+            <button
+                id="userLoginButton"
+                class="btn btn-primary btn-full"
+                onclick="userLogin()"
+            >
+                Login
+            </button>
+
+            <div class="auth-links">
+
+                <button
+                    class="link-btn"
+                    onclick="showUserRegister()"
+                >
+                    User Registration
+                </button>
+
+                <button
+                    class="link-btn"
+                    onclick="showAdminLogin()"
+                >
+                    Admin Login
+                </button>
+
+                <button
+                    class="link-btn"
+                    onclick="showAdminRegister()"
+                >
+                    Admin Registration
+                </button>
+
+            </div>
+
+            <p
+                id="loginMessage"
+                class="message"
+            ></p>
+
+        </div>
+
+
+        <!-- ================= USER REGISTRATION ================= -->
+
+        <div
+            id="userRegisterForm"
+            class="hidden"
+        >
+
+            <div class="auth-title">
+                User Registration
+            </div>
+
+            <input
+                id="registerName"
+                class="input"
+                type="text"
+                placeholder="Full name"
+            >
+
+            <input
+                id="registerEmail"
+                class="input"
+                type="email"
+                placeholder="Email"
+            >
+
+            <input
+                id="registerPhone"
+                class="input"
+                type="tel"
+                placeholder="Phone number"
+            >
+
+            <input
+                id="registerPassword"
+                class="input"
+                type="password"
+                placeholder="Password (minimum 6 characters)"
+            >
+
+            <button
+                id="userRegisterButton"
+                class="btn btn-primary btn-full"
+                onclick="registerUser()"
+            >
+                Create User Account
+            </button>
+
+            <div class="auth-links">
+
+                <button
+                    class="link-btn"
+                    onclick="showUserLogin()"
+                >
+                    Back to User Login
+                </button>
+
+            </div>
+
+            <p
+                id="registerMessage"
+                class="message"
+            ></p>
+
+        </div>
+
+
+        <!-- ================= ADMIN LOGIN ================= -->
+
+        <div
+            id="adminLoginForm"
+            class="hidden"
+        >
+
+            <div class="auth-title">
+                Admin Login
+            </div>
+
+            <input
+                id="adminEmail"
+                class="input"
+                type="email"
+                placeholder="Admin email"
+            >
+
+            <input
+                id="adminPassword"
+                class="input"
+                type="password"
+                placeholder="Admin password"
+            >
+
+            <button
+                id="adminLoginButton"
+                class="btn btn-purple btn-full"
+                onclick="adminLogin()"
+            >
+                Login as Admin
+            </button>
+
+            <div class="auth-links">
+
+                <button
+                    class="link-btn"
+                    onclick="showAdminRegister()"
+                >
+                    Admin Registration
+                </button>
+
+                <button
+                    class="link-btn"
+                    onclick="showUserLogin()"
+                >
+                    Back to User Login
+                </button>
+
+            </div>
+
+            <p
+                id="adminMessage"
+                class="message"
+            ></p>
+
+        </div>
+
+
+        <!-- ================= ADMIN REGISTRATION ================= -->
+
+        <div
+            id="adminRegisterForm"
+            class="hidden"
+        >
+
+            <div class="auth-title">
+                Admin Registration
+            </div>
+
+            <input
+                id="adminRegisterName"
+                class="input"
+                type="text"
+                placeholder="Administrator name"
+            >
+
+            <input
+                id="adminRegisterEmail"
+                class="input"
+                type="email"
+                placeholder="Admin email"
+            >
+
+            <input
+                id="adminRegisterPhone"
+                class="input"
+                type="tel"
+                placeholder="Phone number"
+            >
+
+            <input
+                id="adminRegisterPassword"
+                class="input"
+                type="password"
+                placeholder="Admin password (minimum 6 characters)"
+            >
+
+            <button
+                id="adminRegisterButton"
+                class="btn btn-purple btn-full"
+                onclick="registerAdmin()"
+            >
+                Create Admin Account
+            </button>
+
+            <div class="auth-links">
+
+                <button
+                    class="link-btn"
+                    onclick="showAdminLogin()"
+                >
+                    Back to Admin Login
+                </button>
+
+                <button
+                    class="link-btn"
+                    onclick="showUserLogin()"
+                >
+                    User Login
+                </button>
+
+            </div>
+
+            <p
+                id="adminRegisterMessage"
+                class="message"
+            ></p>
+
+            <div class="note">
+                Admin Registration is enabled for your college
+                AbDMS demonstration. In a production application,
+                administrator creation should be restricted.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+MAIN APPLICATION
+========================================================= -->
+
+<section
+    id="appSection"
+    class="hidden"
+>
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <div class="topbar-icon">
+                🎫
+            </div>
+
+            <div>
+
+                <div class="topbar-title">
+                    Digital Queue & Appointment Manager
+                </div>
+
+                <div class="topbar-sub">
+                    AbDMS • Firebase
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <div class="avatar">
+                <span id="avatarText">U</span>
+            </div>
+
+            <div class="user-info">
+
+                <strong id="currentUserName">
+                    User
+                </strong>
+
+                <span id="currentUserRole">
+                    User
+                </span>
+
+            </div>
+
+            <button
+                class="logout-btn"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <!-- USER MENU -->
+
+            <div
+                id="userMenu"
+                class="hidden"
+            >
+
+                <div class="menu-title">
+                    User Menu
+                </div>
+
+                <button
+                    id="nav-userDashboard"
+                    class="nav-btn"
+                    onclick="showPage('userDashboard')"
+                >
+                    <span>🏠</span>
+                    Dashboard
+                </button>
+
+                <button
+                    id="nav-bookAppointment"
+                    class="nav-btn"
+                    onclick="showPage('bookAppointment')"
+                >
+                    <span>📅</span>
+                    Book Appointment
+                </button>
+
+                <button
+                    id="nav-myAppointments"
+                    class="nav-btn"
+                    onclick="showPage('myAppointments')"
+                >
+                    <span>📋</span>
+                    My Appointments
+                </button>
+
+                <button
+                    id="nav-myQueue"
+                    class="nav-btn"
+                    onclick="showPage('myQueue')"
+                >
+                    <span>🎫</span>
+                    Queue Status
+                </button>
+
+                <button
+                    id="nav-profile"
+                    class="nav-btn"
+                    onclick="showPage('profile')"
+                >
+                    <span>👤</span>
+                    My Profile
+                </button>
+
+            </div>
+
+
+            <!-- ADMIN MENU -->
+
+            <div
+                id="adminMenu"
+                class="hidden"
+            >
+
+                <div class="menu-title">
+                    Administration
+                </div>
+
+                <button
+                    id="nav-adminDashboard"
+                    class="nav-btn"
+                    onclick="showPage('adminDashboard')"
+                >
+                    <span>📊</span>
+                    Dashboard
+                </button>
+
+                <button
+                    id="nav-manageUsers"
+                    class="nav-btn"
+                    onclick="showPage('manageUsers')"
+                >
+                    <span>👥</span>
+                    User Management
+                </button>
+
+                <button
+                    id="nav-manageDepartments"
+                    class="nav-btn"
+                    onclick="showPage('manageDepartments')"
+                >
+                    <span>🏢</span>
+                    Departments
+                </button>
+
+                <button
+                    id="nav-manageServices"
+                    class="nav-btn"
+                    onclick="showPage('manageServices')"
+                >
+                    <span>🛠️</span>
+                    Services
+                </button>
+
+                <button
+                    id="nav-manageAppointments"
+                    class="nav-btn"
+                    onclick="showPage('manageAppointments')"
+                >
+                    <span>📅</span>
+                    Appointments
+                </button>
+
+                <button
+                    id="nav-manageQueue"
+                    class="nav-btn"
+                    onclick="showPage('manageQueue')"
+                >
+                    <span>🎟️</span>
+                    Queue Management
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main">
+
+
+            <!-- =================================================
+            USER DASHBOARD
+            ================================================== -->
+
+            <div
+                id="userDashboard"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            User Dashboard
+                        </h1>
+
+                        <p>
+                            Manage appointments and monitor your queue.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card welcome">
+
+                    <h2>
+                        Welcome back 👋
+                    </h2>
+
+                    <p>
+                        Book an appointment, receive your queue
+                        number and track your appointment status.
+                    </p>
+
+                    <button
+                        class="btn"
+                        style="background:white;color:#1d4ed8;margin-top:18px"
+                        onclick="showPage('bookAppointment')"
+                    >
+                        + Book Appointment
+                    </button>
+
+                </div>
+
+
+                <div class="stats">
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Total Appointments
+                        </div>
+
+                        <div
+                            id="userTotalAppointments"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Waiting
+                        </div>
+
+                        <div
+                            id="userWaiting"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Completed
+                        </div>
+
+                        <div
+                            id="userCompleted"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Cancelled
+                        </div>
+
+                        <div
+                            id="userCancelled"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2 style="margin-bottom:15px">
+                        Recent Appointments
+                    </h2>
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Queue</th>
+                                    <th>Department</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="userRecentTable"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            BOOK APPOINTMENT
+            ================================================== -->
+
+            <div
+                id="bookAppointment"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Book Appointment
+                        </h1>
+
+                        <p>
+                            Choose your department, service, date and time.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                Department
+                            </label>
+
+                            <select
+                                id="appointmentDepartment"
+                                class="control"
+                            >
+
+                                <option value="">
+                                    Select Department
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Service
+                            </label>
+
+                            <select
+                                id="appointmentService"
+                                class="control"
+                            >
+
+                                <option value="">
+                                    Select Service
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Appointment Date
+                            </label>
+
+                            <input
+                                id="appointmentDate"
+                                class="control"
+                                type="date"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Appointment Time
+                            </label>
+
+                            <input
+                                id="appointmentTime"
+                                class="control"
+                                type="time"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="bookAppointment()"
+                        >
+                            Confirm Appointment
+                        </button>
+
+                        <button
+                            class="btn btn-secondary"
+                            onclick="clearAppointmentForm()"
+                        >
+                            Clear
+                        </button>
+
+                    </div>
+
+
+                    <p
+                        id="appointmentMessage"
+                        class="message"
+                    ></p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            MY APPOINTMENTS
+            ================================================== -->
+
+            <div
+                id="myAppointments"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            My Appointments
+                        </h1>
+
+                        <p>
+                            View and cancel your appointments.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Queue</th>
+                                    <th>Department</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody
+                                id="myAppointmentsTable"
+                            ></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            USER QUEUE
+            ================================================== -->
+
+            <div
+                id="myQueue"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Queue Status
+                        </h1>
+
+                        <p>
+                            Monitor your active appointment.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="queue-box">
+
+                        <div class="queue-caption">
+                            YOUR QUEUE NUMBER
+                        </div>
+
+                        <div
+                            id="myQueueNumber"
+                            class="queue-number"
+                        >
+                            --
+                        </div>
+
+                        <div
+                            id="queueStatusText"
+                            class="queue-current"
+                        >
+                            No active queue
+                        </div>
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="loadMyQueue()"
+                        >
+                            Refresh
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            PROFILE
+            ================================================== -->
+
+            <div
+                id="profile"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            My Profile
+                        </h1>
+
+                        <p>
+                            Update your personal information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                Full Name
+                            </label>
+
+                            <input
+                                id="profileName"
+                                class="control"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Phone
+                            </label>
+
+                            <input
+                                id="profilePhone"
+                                class="control"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Email
+                            </label>
+
+                            <input
+                                id="profileEmail"
+                                class="control"
+                                disabled
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="updateProfile()"
+                        >
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            ADMIN DASHBOARD
+            ================================================== -->
+
+            <div
+                id="adminDashboard"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Admin Dashboard
+                        </h1>
+
+                        <p>
+                            Control the complete queue management system.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="refreshAdmin()"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </div>
+
+
+                <div class="stats">
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Total Users
+                        </div>
+
+                        <div
+                            id="adminUsers"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Appointments
+                        </div>
+
+                        <div
+                            id="adminAppointments"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Waiting Queue
+                        </div>
+
+                        <div
+                            id="adminWaiting"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Completed
+                        </div>
+
+                        <div
+                            id="adminCompleted"
+                            class="stat-value"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2>
+                        System Overview
+                    </h2>
+
+                    <p style="color:#64748b;margin-top:7px">
+                        Manage users, departments, services,
+                        appointments and queues.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            ADMIN USERS
+            ================================================== -->
+
+            <div
+                id="manageUsers"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            User Management
+                        </h1>
+
+                        <p>
+                            View and edit registered users.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <input
+                        id="userSearch"
+                        class="control"
+                        placeholder="Search users..."
+                        oninput="filterUsers()"
+                    >
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="usersTable"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            DEPARTMENT MANAGEMENT
+            ================================================== -->
+
+            <div
+                id="manageDepartments"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Department Management
+                        </h1>
+
+                        <p>
+                            Create, read, update and delete departments.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2>
+                        Add Department
+                    </h2>
+
+                    <div
+                        class="form-grid"
+                        style="margin-top:16px"
+                    >
+
+                        <div class="form-group">
+
+                            <label>
+                                Department Name
+                            </label>
+
+                            <input
+                                id="departmentName"
+                                class="control"
+                                placeholder="General Consultation"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Description
+                            </label>
+
+                            <input
+                                id="departmentDescription"
+                                class="control"
+                                placeholder="Department description"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="addDepartment()"
+                        >
+                            + Add Department
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody
+                                id="departmentsTable"
+                            ></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            SERVICE MANAGEMENT
+            ================================================== -->
+
+            <div
+                id="manageServices"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Service Management
+                        </h1>
+
+                        <p>
+                            Manage services linked to departments.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2>
+                        Add Service
+                    </h2>
+
+
+                    <div
+                        class="form-grid"
+                        style="margin-top:16px"
+                    >
+
+                        <div class="form-group">
+
+                            <label>
+                                Service Name
+                            </label>
+
+                            <input
+                                id="serviceName"
+                                class="control"
+                                placeholder="General Checkup"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Department
+                            </label>
+
+                            <select
+                                id="serviceDepartment"
+                                class="control"
+                            >
+
+                                <option value="">
+                                    Select Department
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label>
+                                Description
+                            </label>
+
+                            <input
+                                id="serviceDescription"
+                                class="control"
+                                placeholder="Service description"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="addService()"
+                        >
+                            + Add Service
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Department</th>
+                                    <th>Description</th>
+                                    <th>Action</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody
+                                id="servicesTable"
+                            ></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            ADMIN APPOINTMENTS
+            ================================================== -->
+
+            <div
+                id="manageAppointments"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Appointment Management
+                        </h1>
+
+                        <p>
+                            Manage every appointment and its status.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="loadAllAppointments()"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </div>
+
+
+                <div class="card">
+
+                    <input
+                        id="appointmentSearch"
+                        class="control"
+                        placeholder="Search appointments..."
+                        oninput="filterAppointments()"
+                    >
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>Queue</th>
+                                    <th>User</th>
+                                    <th>Department</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody
+                                id="appointmentsTable"
+                            ></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+            ADMIN QUEUE
+            ================================================== -->
+
+            <div
+                id="manageQueue"
+                class="page hidden"
+            >
+
+                <div class="page-header">
+
+                    <div>
+
+                        <h1>
+                            Queue Management
+                        </h1>
+
+                        <p>
+                            Call the next customer and manage the queue.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="loadQueue()"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="queue-box">
+
+                        <div class="queue-caption">
+                            CURRENTLY SERVING
+                        </div>
+
+                        <div
+                            id="currentQueue"
+                            class="queue-number"
+                        >
+                            --
+                        </div>
+
+                        <div
+                            id="currentQueueStatus"
+                            class="queue-current"
+                        >
+                            No customer currently serving
+                        </div>
+
+                        <button
+                            class="btn btn-success"
+                            onclick="callNextCustomer()"
+                        >
+                            ▶ Call Next Customer
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h2 style="margin-bottom:15px">
+                        Waiting Queue
+                    </h2>
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+                                    <th>Queue</th>
+                                    <th>User</th>
+                                    <th>Department</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="queueTable"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+MODALS
+========================================================= -->
+
+<div
+    id="userModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>
+                Edit User
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeUserModal()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <input
+            type="hidden"
+            id="editUserId"
+        >
+
+        <div class="form-group">
+
+            <label>
+                Name
+            </label>
+
+            <input
+                id="editUserName"
+                class="control"
+            >
+
+        </div>
+
+        <div
+            class="form-group"
+            style="margin-top:12px"
+        >
+
+            <label>
+                Phone
+            </label>
+
+            <input
+                id="editUserPhone"
+                class="control"
+            >
+
+        </div>
+
+        <div class="form-actions">
+
+            <button
+                class="btn btn-primary"
+                onclick="saveUserEdit()"
+            >
+                Save
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                onclick="closeUserModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="departmentModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>
+                Edit Department
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeDepartmentModal()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <input
+            type="hidden"
+            id="editDepartmentId"
+        >
+
+        <div class="form-group">
+
+            <label>
+                Department Name
+            </label>
+
+            <input
+                id="editDepartmentName"
+                class="control"
+            >
+
+        </div>
+
+        <div
+            class="form-group"
+            style="margin-top:12px"
+        >
+
+            <label>
+                Description
+            </label>
+
+            <input
+                id="editDepartmentDescription"
+                class="control"
+            >
+
+        </div>
+
+        <div class="form-actions">
+
+            <button
+                class="btn btn-primary"
+                onclick="saveDepartmentEdit()"
+            >
+                Save
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                onclick="closeDepartmentModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    id="serviceModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>
+                Edit Service
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeServiceModal()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <input
+            type="hidden"
+            id="editServiceId"
+        >
+
+        <div class="form-group">
+
+            <label>
+                Service Name
+            </label>
+
+            <input
+                id="editServiceName"
+                class="control"
+            >
+
+        </div>
+
+        <div
+            class="form-group"
+            style="margin-top:12px"
+        >
+
+            <label>
+                Description
+            </label>
+
+            <input
+                id="editServiceDescription"
+                class="control"
+            >
+
+        </div>
+
+        <div class="form-actions">
+
+            <button
+                class="btn btn-primary"
+                onclick="saveServiceEdit()"
+            >
+                Save
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                onclick="closeServiceModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+FIREBASE
+========================================================= -->
+
+<script type="module">
+
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+}
+from
+"https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    getDoc,
+    doc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    query,
+    where,
+    serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+/* =========================================================
+YOUR EXACT FIREBASE CONFIG
+========================================================= */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyDLdVfuZvSp45dkf6JPs3YhVdZLtJXNXjw",
+
+    authDomain:
+        "ca-2-dq.firebaseapp.com",
+
+    projectId:
+        "ca-2-dq",
+
+    storageBucket:
+        "ca-2-dq.firebasestorage.app",
+
+    messagingSenderId:
+        "821676351303",
+
+    appId:
+        "1:821676351303:web:ef571a1856127899aff662",
+
+    measurementId:
+        "G-R24DXLZ7LH"
+};
+
+
+/* =========================================================
+FIREBASE INITIALIZATION
+========================================================= */
+
+const app =
+    initializeApp(firebaseConfig);
+
+const auth =
+    getAuth(app);
+
+const db =
+    getFirestore(app);
+
+
+/* =========================================================
+GLOBAL STATE
+========================================================= */
+
+let currentUser = null;
+let currentRole = null;
+
+let allUsers = [];
+let allAppointments = [];
+
+
+/* =========================================================
+AUTH SCREEN FUNCTIONS
+========================================================= */
+
+window.showUserLogin = function(){
+
+    hideAuthForms();
+
+    document
+        .getElementById("userLoginForm")
+        .classList
+        .remove("hidden");
+};
+
+
+window.showUserRegister = function(){
+
+    hideAuthForms();
+
+    document
+        .getElementById("userRegisterForm")
+        .classList
+        .remove("hidden");
+};
+
+
+window.showAdminLogin = function(){
+
+    hideAuthForms();
+
+    document
+        .getElementById("adminLoginForm")
+        .classList
+        .remove("hidden");
+};
+
+
+window.showAdminRegister = function(){
+
+    hideAuthForms();
+
+    document
+        .getElementById("adminRegisterForm")
+        .classList
+        .remove("hidden");
+};
+
+
+function hideAuthForms(){
+
+    document
+        .getElementById("userLoginForm")
+        .classList
+        .add("hidden");
+
+    document
+        .getElementById("userRegisterForm")
+        .classList
+        .add("hidden");
+
+    document
+        .getElementById("adminLoginForm")
+        .classList
+        .add("hidden");
+
+    document
+        .getElementById("adminRegisterForm")
+        .classList
+        .add("hidden");
+}
+
+
+/* =========================================================
+USER REGISTRATION
+========================================================= */
+
+window.registerUser = async function(){
+
+    const name =
+        document
+            .getElementById("registerName")
+            .value
+            .trim();
+
+    const email =
+        document
+            .getElementById("registerEmail")
+            .value
+            .trim();
+
+    const phone =
+        document
+            .getElementById("registerPhone")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("registerPassword")
+            .value;
+
+    const message =
+        document
+            .getElementById("registerMessage");
+
+
+    message.style.color =
+        "#dc2626";
+
+
+    if(
+        !name ||
+        !email ||
+        !phone ||
+        !password
+    ){
+
+        message.textContent =
+            "Please fill all fields.";
+
+        return;
+    }
+
+
+    if(password.length < 6){
+
+        message.textContent =
+            "Password must contain at least 6 characters.";
+
+        return;
+    }
+
+
+    try{
+
+        const credential =
+            await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+
+        const user =
+            credential.user;
+
+
+        await setDoc(
+            doc(
+                db,
+                "users",
+                user.uid
+            ),
+            {
+
+                uid:
+                    user.uid,
+
+                name:
+                    name,
+
+                email:
+                    email,
+
+                phone:
+                    phone,
+
+                role:
+                    "user",
+
+                createdAt:
+                    serverTimestamp()
+            }
+        );
+
+
+        message.style.color =
+            "#16a34a";
+
+        message.textContent =
+            "Registration successful. Opening dashboard...";
+
+
+    }
+    catch(error){
+
+        message.textContent =
+            getFirebaseError(error);
+
+    }
+
+};
+
+
+/* =========================================================
+ADMIN REGISTRATION
+========================================================= */
+
+window.registerAdmin = async function(){
+
+    const name =
+        document
+            .getElementById(
+                "adminRegisterName"
+            )
+            .value
+            .trim();
+
+    const email =
+        document
+            .getElementById(
+                "adminRegisterEmail"
+            )
+            .value
+            .trim();
+
+    const phone =
+        document
+            .getElementById(
+                "adminRegisterPhone"
+            )
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById(
+                "adminRegisterPassword"
+            )
+            .value;
+
+    const message =
+        document
+            .getElementById(
+                "adminRegisterMessage"
+            );
+
+
+    message.style.color =
+        "#dc2626";
+
+
+    if(
+        !name ||
+        !email ||
+        !phone ||
+        !password
+    ){
+
+        message.textContent =
+            "Please fill all fields.";
+
+        return;
+    }
+
+
+    if(password.length < 6){
+
+        message.textContent =
+            "Password must contain at least 6 characters.";
+
+        return;
+    }
+
+
+    try{
+
+        /*
+        1. Create Firebase Authentication account.
+        */
+
+        const credential =
+            await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+
+        const user =
+            credential.user;
+
+
+        /*
+        2. Create profile.
+        */
+
+        await setDoc(
+            doc(
+                db,
+                "users",
+                user.uid
+            ),
+            {
+
+                uid:
+                    user.uid,
+
+                name:
+                    name,
+
+                email:
+                    email,
+
+                phone:
+                    phone,
+
+                role:
+                    "admin",
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        /*
+        3. Create admin role document.
+        */
+
+        await setDoc(
+            doc(
+                db,
+                "admins",
+                user.uid
+            ),
+            {
+
+                uid:
+                    user.uid,
+
+                name:
+                    name,
+
+                email:
+                    email,
+
+                phone:
+                    phone,
+
+                role:
+                    "admin",
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        currentUser =
+            user;
+
+        currentRole =
+            "admin";
+
+
+        message.style.color =
+            "#16a34a";
+
+        message.textContent =
+            "Admin registration successful.";
+
+
+        openAdmin();
+
+    }
+    catch(error){
+
+        message.textContent =
+            getFirebaseError(error);
+
+    }
+
+};
+
+
+/* =========================================================
+USER LOGIN
+========================================================= */
+
+window.userLogin = async function(){
+
+    const email =
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+    const message =
+        document
+            .getElementById("loginMessage");
+
+
+    if(
+        !email ||
+        !password
+    ){
+
+        message.textContent =
+            "Enter email and password.";
+
+        return;
+    }
+
+
+    try{
+
+        const credential =
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+
+        /*
+        Prevent admin accounts from using
+        User Login.
+        */
+
+        const adminDoc =
+            await getDoc(
+                doc(
+                    db,
+                    "admins",
+                    credential.user.uid
+                )
+            );
+
+
+        if(adminDoc.exists()){
+
+            await signOut(auth);
+
+            message.textContent =
+                "This is an administrator account. Please use Admin Login.";
+
+            return;
+        }
+
+    }
+    catch(error){
+
+        message.textContent =
+            getFirebaseError(error);
+
+    }
+
+};
+
+
+/* =========================================================
+ADMIN LOGIN
+========================================================= */
+
+window.adminLogin = async function(){
+
+    const email =
+        document
+            .getElementById("adminEmail")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("adminPassword")
+            .value;
+
+    const message =
+        document
+            .getElementById("adminMessage");
+
+
+    if(
+        !email ||
+        !password
+    ){
+
+        message.textContent =
+            "Enter admin email and password.";
+
+        return;
+    }
+
+
+    try{
+
+        const credential =
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
+
+
+        /*
+        Verify the account is actually
+        present inside admins collection.
+        */
+
+        const adminDoc =
+            await getDoc(
+                doc(
+                    db,
+                    "admins",
+                    credential.user.uid
+                )
+            );
+
+
+        if(
+            !adminDoc.exists()
+        ){
+
+            await signOut(auth);
+
+            message.textContent =
+                "This account is not registered as an administrator.";
+
+            return;
+        }
+
+
+        currentUser =
+            credential.user;
+
+        currentRole =
+            "admin";
+
+
+        openAdmin();
+
+    }
+    catch(error){
+
+        message.textContent =
+            getFirebaseError(error);
+
+    }
+
+};
+
+
+/* =========================================================
+AUTH STATE
+========================================================= */
+
+onAuthStateChanged(
+    auth,
+    async(user)=>{
+
+        if(!user){
+
+            currentUser = null;
+            currentRole = null;
+
+            document
+                .getElementById("authSection")
+                .classList
+                .remove("hidden");
+
+            document
+                .getElementById("appSection")
+                .classList
+                .add("hidden");
+
+            return;
+        }
+
+
+        currentUser =
+            user;
+
+
+        try{
+
+            const adminDoc =
+                await getDoc(
+                    doc(
+                        db,
+                        "admins",
+                        user.uid
+                    )
+                );
+
+
+            if(adminDoc.exists()){
+
+                currentRole =
+                    "admin";
+
+                openAdmin();
+
+            }
+            else{
+
+                currentRole =
+                    "user";
+
+                openUser();
+
+            }
+
+        }
+        catch(error){
+
+            console.error(error);
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+OPEN USER
+========================================================= */
+
+async function openUser(){
+
+    document
+        .getElementById("authSection")
+        .classList
+        .add("hidden");
+
+    document
+        .getElementById("appSection")
+        .classList
+        .remove("hidden");
+
+
+    document
+        .getElementById("userMenu")
+        .classList
+        .remove("hidden");
+
+    document
+        .getElementById("adminMenu")
+        .classList
+        .add("hidden");
+
+
+    setText(
+        "currentUserRole",
+        "User"
+    );
+
+
+    await loadProfile();
+
+
+    showPage(
+        "userDashboard"
+    );
+
+
+    await loadDepartments();
+
+    await loadUserAppointments();
+
+}
+
+
+/* =========================================================
+OPEN ADMIN
+========================================================= */
+
+function openAdmin(){
+
+    document
+        .getElementById("authSection")
+        .classList
+        .add("hidden");
+
+    document
+        .getElementById("appSection")
+        .classList
+        .remove("hidden");
+
+
+    /*
+    Explicitly hide USER menu.
+    */
+
+    document
+        .getElementById("userMenu")
+        .classList
+        .add("hidden");
+
+
+    /*
+    Explicitly show ADMIN menu.
+    */
+
+    document
+        .getElementById("adminMenu")
+        .classList
+        .remove("hidden");
+
+
+    currentRole =
+        "admin";
+
+
+    setText(
+        "currentUserName",
+        "Administrator"
+    );
+
+    setText(
+        "currentUserRole",
+        "Administrator"
+    );
+
+    setText(
+        "avatarText",
+        "A"
+    );
+
+
+    /*
+    IMPORTANT:
+    Show ADMIN DASHBOARD only.
+    */
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page=>{
+            page.classList.add("hidden");
+        });
+
+
+    document
+        .getElementById("adminDashboard")
+        .classList
+        .remove("hidden");
+
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(btn=>{
+            btn.classList.remove("active");
+        });
+
+
+    document
+        .getElementById("nav-adminDashboard")
+        .classList
+        .add("active");
+
+
+    loadAdminData();
+
+}
+
+
+/* =========================================================
+LOGOUT
+========================================================= */
+
+window.logout = async function(){
+
+    await signOut(auth);
+
+};
+
+
+/* =========================================================
+PAGE NAVIGATION
+========================================================= */
+
+window.showPage = function(pageId){
+
+    const userPages = [
+        "userDashboard",
+        "bookAppointment",
+        "myAppointments",
+        "myQueue",
+        "profile"
+    ];
+
+
+    const adminPages = [
+        "adminDashboard",
+        "manageUsers",
+        "manageDepartments",
+        "manageServices",
+        "manageAppointments",
+        "manageQueue"
+    ];
+
+
+    /*
+    Frontend role protection.
+    */
+
+    if(
+        currentRole === "admin" &&
+        !adminPages.includes(pageId)
+    ){
+
+        pageId =
+            "adminDashboard";
+    }
+
+
+    if(
+        currentRole === "user" &&
+        !userPages.includes(pageId)
+    ){
+
+        pageId =
+            "userDashboard";
+    }
+
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page=>{
+            page.classList.add("hidden");
+        });
+
+
+    const page =
+        document.getElementById(
+            pageId
+        );
+
+
+    if(!page){
+
+        return;
+    }
+
+
+    page.classList.remove("hidden");
+
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(btn=>{
+            btn.classList.remove("active");
+        });
+
+
+    const nav =
+        document.getElementById(
+            "nav-" + pageId
+        );
+
+
+    if(nav){
+
+        nav.classList.add("active");
+    }
+
+
+    if(pageId === "userDashboard"){
+
+        loadUserAppointments();
+
+    }
+
+
+    if(pageId === "bookAppointment"){
+
+        loadDepartments();
+
+    }
+
+
+    if(pageId === "myAppointments"){
+
+        loadUserAppointments();
+
+    }
+
+
+    if(pageId === "myQueue"){
+
+        loadMyQueue();
+
+    }
+
+
+    if(pageId === "profile"){
+
+        loadProfile();
+
+    }
+
+
+    if(pageId === "adminDashboard"){
+
+        loadAdminData();
+
+    }
+
+
+    if(pageId === "manageUsers"){
+
+        loadUsers();
+
+    }
+
+
+    if(pageId === "manageDepartments"){
+
+        loadDepartments();
+
+    }
+
+
+    if(pageId === "manageServices"){
+
+        loadDepartments();
+
+        loadServices();
+
+    }
+
+
+    if(pageId === "manageAppointments"){
+
+        loadAllAppointments();
+
+    }
+
+
+    if(pageId === "manageQueue"){
+
+        loadQueue();
+
+    }
+
+};
+
+
+/* =========================================================
+LOAD PROFILE
+========================================================= */
+
+async function loadProfile(){
+
+    if(!currentUser){
+
+        return;
+    }
+
+
+    try{
+
+        const profile =
+            await getDoc(
+                doc(
+                    db,
+                    "users",
+                    currentUser.uid
+                )
+            );
+
+
+        if(
+            !profile.exists()
+        ){
+
+            return;
+        }
+
+
+        const data =
+            profile.data();
+
+
+        const name =
+            data.name ||
+            currentUser.email ||
+            "User";
+
+
+        setText(
+            "currentUserName",
+            name
+        );
+
+
+        setText(
+            "avatarText",
+            name
+                .charAt(0)
+                .toUpperCase()
+        );
+
+
+        setText(
+            "currentUserRole",
+            currentRole === "admin"
+            ? "Administrator"
+            : "User"
+        );
+
+
+        document
+            .getElementById("profileName")
+            .value =
+            data.name || "";
+
+
+        document
+            .getElementById("profilePhone")
+            .value =
+            data.phone || "";
+
+
+        document
+            .getElementById("profileEmail")
+            .value =
+            data.email || "";
+
+    }
+    catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================================
+LOAD DEPARTMENTS
+========================================================= */
+
+async function loadDepartments(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "departments"
+                )
+            );
+
+
+        const appointmentSelect =
+            document.getElementById(
+                "appointmentDepartment"
+            );
+
+
+        const serviceSelect =
+            document.getElementById(
+                "serviceDepartment"
+            );
+
+
+        const table =
+            document.getElementById(
+                "departmentsTable"
+            );
+
+
+        if(appointmentSelect){
+
+            appointmentSelect.innerHTML =
+                `
+                <option value="">
+                    Select Department
+                </option>
+                `;
+
+        }
+
+
+        if(serviceSelect){
+
+            serviceSelect.innerHTML =
+                `
+                <option value="">
+                    Select Department
+                </option>
+                `;
+
+        }
+
+
+        if(table){
+
+            table.innerHTML = "";
+
+        }
+
+
+        snapshot.forEach(
+            departmentDoc=>{
+
+                const data =
+                    departmentDoc.data();
+
+
+                if(appointmentSelect){
+
+                    appointmentSelect.innerHTML +=
+                        `
+                        <option
+                            value="${departmentDoc.id}"
+                        >
+                            ${escapeHTML(data.name)}
+                        </option>
+                        `;
+
+                }
+
+
+                if(serviceSelect){
+
+                    serviceSelect.innerHTML +=
+                        `
+                        <option
+                            value="${departmentDoc.id}"
+                        >
+                            ${escapeHTML(data.name)}
+                        </option>
+                        `;
+
+                }
+
+
+                if(table){
+
+                    table.innerHTML +=
+                        `
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    ${escapeHTML(data.name)}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    data.description || "-"
+                                )}
+                            </td>
+
+                            <td>
+                                <span class="status completed">
+                                    ${escapeHTML(
+                                        data.status || "Active"
+                                    )}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <div class="actions">
+
+                                    <button
+                                        class="small small-edit"
+                                        onclick="
+                                            editDepartment(
+                                                '${departmentDoc.id}'
+                                            )
+                                        "
+                                    >
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        class="small small-delete"
+                                        onclick="
+                                            deleteDepartment(
+                                                '${departmentDoc.id}'
+                                            )
+                                        "
+                                    >
+                                        Delete
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                        `;
+
+                }
+
+            }
+        );
+
+
+        if(
+            table &&
+            snapshot.empty
+        ){
+
+            table.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="4"
+                        class="empty"
+                    >
+                        No departments found.
+                    </td>
+                </tr>
+                `;
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Department error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+ADD DEPARTMENT
+========================================================= */
+
+window.addDepartment =
+async function(){
+
+    const name =
+        document
+            .getElementById(
+                "departmentName"
+            )
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById(
+                "departmentDescription"
+            )
+            .value
+            .trim();
+
+
+    if(!name){
+
+        alert(
+            "Enter department name."
+        );
+
+        return;
+    }
+
+
+    try{
+
+        await addDoc(
+            collection(
+                db,
+                "departments"
+            ),
+            {
+
+                name:
+                    name,
+
+                description:
+                    description,
+
+                status:
+                    "Active",
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        document
+            .getElementById(
+                "departmentName"
+            )
+            .value =
+            "";
+
+
+        document
+            .getElementById(
+                "departmentDescription"
+            )
+            .value =
+            "";
+
+
+        await loadDepartments();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+EDIT DEPARTMENT
+========================================================= */
+
+window.editDepartment =
+async function(id){
+
+    const departmentDoc =
+        await getDoc(
+            doc(
+                db,
+                "departments",
+                id
+            )
+        );
+
+
+    if(
+        !departmentDoc.exists()
+    ){
+
+        return;
+
+    }
+
+
+    const data =
+        departmentDoc.data();
+
+
+    document
+        .getElementById(
+            "editDepartmentId"
+        )
+        .value =
+        id;
+
+
+    document
+        .getElementById(
+            "editDepartmentName"
+        )
+        .value =
+        data.name || "";
+
+
+    document
+        .getElementById(
+            "editDepartmentDescription"
+        )
+        .value =
+        data.description || "";
+
+
+    document
+        .getElementById(
+            "departmentModal"
+        )
+        .classList
+        .remove("hidden");
+
+};
+
+
+window.saveDepartmentEdit =
+async function(){
+
+    const id =
+        document
+            .getElementById(
+                "editDepartmentId"
+            )
+            .value;
+
+
+    const name =
+        document
+            .getElementById(
+                "editDepartmentName"
+            )
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById(
+                "editDepartmentDescription"
+            )
+            .value
+            .trim();
+
+
+    if(!id || !name){
+
+        return;
+    }
+
+
+    try{
+
+        await updateDoc(
+            doc(
+                db,
+                "departments",
+                id
+            ),
+            {
+
+                name,
+                description
+
+            }
+        );
+
+
+        closeDepartmentModal();
+
+        await loadDepartments();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+window.closeDepartmentModal =
+function(){
+
+    document
+        .getElementById(
+            "departmentModal"
+        )
+        .classList
+        .add("hidden");
+
+};
+
+
+/* =========================================================
+DELETE DEPARTMENT
+========================================================= */
+
+window.deleteDepartment =
+async function(id){
+
+    if(
+        !confirm(
+            "Delete this department?"
+        )
+    ){
+
+        return;
+    }
+
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "departments",
+                id
+            )
+        );
+
+
+        await loadDepartments();
+
+
+        await loadServices();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+DEPARTMENT CHANGE -> SERVICES
+========================================================= */
+
+document
+    .getElementById(
+        "appointmentDepartment"
+    )
+    .addEventListener(
+        "change",
+        async function(){
+
+            const departmentId =
+                this.value;
+
+
+            const serviceSelect =
+                document.getElementById(
+                    "appointmentService"
+                );
+
+
+            serviceSelect.innerHTML =
+                `
+                <option value="">
+                    Select Service
+                </option>
+                `;
+
+
+            if(!departmentId){
+
+                return;
+            }
+
+
+            try{
+
+                const q =
+                    query(
+                        collection(
+                            db,
+                            "services"
+                        ),
+                        where(
+                            "departmentId",
+                            "==",
+                            departmentId
+                        )
+                    );
+
+
+                const snapshot =
+                    await getDocs(
+                        q
+                    );
+
+
+                snapshot.forEach(
+                    serviceDoc=>{
+
+                        const data =
+                            serviceDoc.data();
+
+
+                        serviceSelect.innerHTML +=
+                            `
+                            <option
+                                value="${serviceDoc.id}"
+                            >
+                                ${escapeHTML(
+                                    data.name
+                                )}
+                            </option>
+                            `;
+
+                    }
+                );
+
+            }
+            catch(error){
+
+                console.error(error);
+
+            }
+
+        }
+    );
+
+
+/* =========================================================
+SERVICES
+========================================================= */
+
+async function loadServices(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "services"
+                )
+            );
+
+
+        const table =
+            document.getElementById(
+                "servicesTable"
+            );
+
+
+        if(!table){
+
+            return;
+
+        }
+
+
+        table.innerHTML = "";
+
+
+        for(
+            const serviceDoc
+            of snapshot.docs
+        ){
+
+            const data =
+                serviceDoc.data();
+
+
+            let departmentName =
+                "Unknown";
+
+
+            if(
+                data.departmentId
+            ){
+
+                const departmentDoc =
+                    await getDoc(
+                        doc(
+                            db,
+                            "departments",
+                            data.departmentId
+                        )
+                    );
+
+
+                if(
+                    departmentDoc.exists()
+                ){
+
+                    departmentName =
+                        departmentDoc.data().name;
+
+                }
+
+            }
+
+
+            table.innerHTML +=
+                `
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHTML(
+                                data.name
+                            )}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            departmentName
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHTML(
+                            data.description || "-"
+                        )}
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <button
+                                class="small small-edit"
+                                onclick="
+                                    editService(
+                                        '${serviceDoc.id}'
+                                    )
+                                "
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="small small-delete"
+                                onclick="
+                                    deleteService(
+                                        '${serviceDoc.id}'
+                                    )
+                                "
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+                `;
+
+        }
+
+
+        if(
+            snapshot.empty
+        ){
+
+            table.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="4"
+                        class="empty"
+                    >
+                        No services found.
+                    </td>
+                </tr>
+                `;
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Service error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+ADD SERVICE
+========================================================= */
+
+window.addService =
+async function(){
+
+    const name =
+        document
+            .getElementById(
+                "serviceName"
+            )
+            .value
+            .trim();
+
+
+    const departmentId =
+        document
+            .getElementById(
+                "serviceDepartment"
+            )
+            .value;
+
+
+    const description =
+        document
+            .getElementById(
+                "serviceDescription"
+            )
+            .value
+            .trim();
+
+
+    if(
+        !name ||
+        !departmentId
+    ){
+
+        alert(
+            "Service name and department are required."
+        );
+
+        return;
+    }
+
+
+    try{
+
+        const departmentDoc =
+            await getDoc(
+                doc(
+                    db,
+                    "departments",
+                    departmentId
+                )
+            );
+
+
+        if(
+            !departmentDoc.exists()
+        ){
+
+            alert(
+                "Department not found."
+            );
+
+            return;
+        }
+
+
+        await addDoc(
+            collection(
+                db,
+                "services"
+            ),
+            {
+
+                name:
+                    name,
+
+                departmentId:
+                    departmentId,
+
+                departmentName:
+                    departmentDoc
+                        .data()
+                        .name,
+
+                description:
+                    description,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        document
+            .getElementById(
+                "serviceName"
+            )
+            .value =
+            "";
+
+
+        document
+            .getElementById(
+                "serviceDescription"
+            )
+            .value =
+            "";
+
+
+        await loadServices();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+EDIT SERVICE
+========================================================= */
+
+window.editService =
+async function(id){
+
+    const serviceDoc =
+        await getDoc(
+            doc(
+                db,
+                "services",
+                id
+            )
+        );
+
+
+    if(
+        !serviceDoc.exists()
+    ){
+
+        return;
+    }
+
+
+    const data =
+        serviceDoc.data();
+
+
+    document
+        .getElementById(
+            "editServiceId"
+        )
+        .value =
+        id;
+
+
+    document
+        .getElementById(
+            "editServiceName"
+        )
+        .value =
+        data.name || "";
+
+
+    document
+        .getElementById(
+            "editServiceDescription"
+        )
+        .value =
+        data.description || "";
+
+
+    document
+        .getElementById(
+            "serviceModal"
+        )
+        .classList
+        .remove("hidden");
+
+};
+
+
+window.saveServiceEdit =
+async function(){
+
+    const id =
+        document
+            .getElementById(
+                "editServiceId"
+            )
+            .value;
+
+
+    const name =
+        document
+            .getElementById(
+                "editServiceName"
+            )
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById(
+                "editServiceDescription"
+            )
+            .value
+            .trim();
+
+
+    if(
+        !id ||
+        !name
+    ){
+
+        return;
+    }
+
+
+    try{
+
+        await updateDoc(
+            doc(
+                db,
+                "services",
+                id
+            ),
+            {
+
+                name,
+                description
+
+            }
+        );
+
+
+        closeServiceModal();
+
+        await loadServices();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+window.closeServiceModal =
+function(){
+
+    document
+        .getElementById(
+            "serviceModal"
+        )
+        .classList
+        .add("hidden");
+
+};
+
+
+/* =========================================================
+DELETE SERVICE
+========================================================= */
+
+window.deleteService =
+async function(id){
+
+    if(
+        !confirm(
+            "Delete this service?"
+        )
+    ){
+
+        return;
+    }
+
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "services",
+                id
+            )
+        );
+
+
+        await loadServices();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+QUEUE GENERATOR
+========================================================= */
+
+async function generateQueueNumber(){
+
+    const snapshot =
+        await getDocs(
+            collection(
+                db,
+                "appointments"
+            )
+        );
+
+
+    let maximum =
+        0;
+
+
+    snapshot.forEach(
+        appointmentDoc=>{
+
+            const data =
+                appointmentDoc.data();
+
+
+            if(
+                data.queueNumber
+            ){
+
+                const number =
+                    parseInt(
+                        String(
+                            data.queueNumber
+                        )
+                        .replace(
+                            "Q-",
+                            ""
+                        )
+                    );
+
+
+                if(
+                    !isNaN(number) &&
+                    number > maximum
+                ){
+
+                    maximum =
+                        number;
+
+                }
+
+            }
+
+        }
+    );
+
+
+    maximum++;
+
+
+    return (
+        "Q-" +
+        String(
+            maximum
+        )
+        .padStart(
+            3,
+            "0"
+        )
+    );
+
+}
+
+
+/* =========================================================
+BOOK APPOINTMENT
+========================================================= */
+
+window.bookAppointment =
+async function(){
+
+    const departmentId =
+        document
+            .getElementById(
+                "appointmentDepartment"
+            )
+            .value;
+
+
+    const serviceId =
+        document
+            .getElementById(
+                "appointmentService"
+            )
+            .value;
+
+
+    const date =
+        document
+            .getElementById(
+                "appointmentDate"
+            )
+            .value;
+
+
+    const time =
+        document
+            .getElementById(
+                "appointmentTime"
+            )
+            .value;
+
+
+    const message =
+        document
+            .getElementById(
+                "appointmentMessage"
+            );
+
+
+    if(
+        !departmentId ||
+        !serviceId ||
+        !date ||
+        !time
+    ){
+
+        message.style.color =
+            "#dc2626";
+
+        message.textContent =
+            "Please complete all appointment fields.";
+
+        return;
+    }
+
+
+    const today =
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+
+    if(date < today){
+
+        message.style.color =
+            "#dc2626";
+
+        message.textContent =
+            "Appointment date cannot be in the past.";
+
+        return;
+    }
+
+
+    try{
+
+        const userDoc =
+            await getDoc(
+                doc(
+                    db,
+                    "users",
+                    currentUser.uid
+                )
+            );
+
+
+        const departmentDoc =
+            await getDoc(
+                doc(
+                    db,
+                    "departments",
+                    departmentId
+                )
+            );
+
+
+        const serviceDoc =
+            await getDoc(
+                doc(
+                    db,
+                    "services",
+                    serviceId
+                )
+            );
+
+
+        if(
+            !userDoc.exists() ||
+            !departmentDoc.exists() ||
+            !serviceDoc.exists()
+        ){
+
+            throw new Error(
+                "Required database record not found."
+            );
+
+        }
+
+
+        if(
+            serviceDoc.data().departmentId !==
+            departmentId
+        ){
+
+            throw new Error(
+                "The selected service does not belong to the selected department."
+            );
+
+        }
+
+
+        const queueNumber =
+            await generateQueueNumber();
+
+
+        const userData =
+            userDoc.data();
+
+
+        await addDoc(
+            collection(
+                db,
+                "appointments"
+            ),
+            {
+
+                userId:
+                    currentUser.uid,
+
+                userName:
+                    userData.name,
+
+                userEmail:
+                    userData.email,
+
+                departmentId:
+                    departmentId,
+
+                departmentName:
+                    departmentDoc
+                        .data()
+                        .name,
+
+                serviceId:
+                    serviceId,
+
+                serviceName:
+                    serviceDoc
+                        .data()
+                        .name,
+
+                appointmentDate:
+                    date,
+
+                appointmentTime:
+                    time,
+
+                queueNumber:
+                    queueNumber,
+
+                status:
+                    "Waiting",
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+        message.style.color =
+            "#16a34a";
+
+
+        message.innerHTML =
+            `
+            Appointment booked successfully.
+            Your queue number is
+            <strong>${escapeHTML(queueNumber)}</strong>.
+            `;
+
+
+        clearAppointmentForm();
+
+
+        await loadUserAppointments();
+
+    }
+    catch(error){
+
+        message.style.color =
+            "#dc2626";
+
+        message.textContent =
+            getFirebaseError(
+                error
+            );
+
+    }
+
+};
+
+
+/* =========================================================
+CLEAR APPOINTMENT FORM
+========================================================= */
+
+window.clearAppointmentForm =
+function(){
+
+    document
+        .getElementById(
+            "appointmentDepartment"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "appointmentService"
+        )
+        .innerHTML =
+        `
+        <option value="">
+            Select Service
+        </option>
+        `;
+
+
+    document
+        .getElementById(
+            "appointmentDate"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "appointmentTime"
+        )
+        .value = "";
+
+};
+
+
+/* =========================================================
+LOAD USER APPOINTMENTS
+========================================================= */
+
+async function loadUserAppointments(){
+
+    if(!currentUser){
+
+        return;
+    }
+
+
+    try{
+
+        const q =
+            query(
+                collection(
+                    db,
+                    "appointments"
+                ),
+                where(
+                    "userId",
+                    "==",
+                    currentUser.uid
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(q);
+
+
+        const appointments =
+            snapshot.docs.map(
+                d=>({
+                    id:d.id,
+                    ...d.data()
+                })
+            );
+
+
+        appointments.sort(
+            (a,b)=>
+                timestampValue(
+                    b.createdAt
+                )
+                -
+                timestampValue(
+                    a.createdAt
+                )
+        );
+
+
+        let total = 0;
+        let waiting = 0;
+        let completed = 0;
+        let cancelled = 0;
+
+
+        appointments.forEach(
+            appointment=>{
+
+                total++;
+
+
+                if(
+                    appointment.status ===
+                    "Waiting"
+                ){
+
+                    waiting++;
+
+                }
+
+
+                if(
+                    appointment.status ===
+                    "Completed"
+                ){
+
+                    completed++;
+
+                }
+
+
+                if(
+                    appointment.status ===
+                    "Cancelled"
+                ){
+
+                    cancelled++;
+
+                }
+
+            }
+        );
+
+
+        setText(
+            "userTotalAppointments",
+            total
+        );
+
+
+        setText(
+            "userWaiting",
+            waiting
+        );
+
+
+        setText(
+            "userCompleted",
+            completed
+        );
+
+
+        setText(
+            "userCancelled",
+            cancelled
+        );
+
+
+        const table =
+            document.getElementById(
+                "myAppointmentsTable"
+            );
+
+
+        if(table){
+
+            table.innerHTML = "";
+
+
+            appointments.forEach(
+                appointment=>{
+
+                    const canCancel =
+                        appointment.status !==
+                        "Completed" &&
+                        appointment.status !==
+                        "Cancelled";
+
+
+                    table.innerHTML +=
+                        `
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    ${escapeHTML(
+                                        appointment.queueNumber
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    appointment.departmentName
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    appointment.serviceName
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    appointment.appointmentDate
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    appointment.appointmentTime
+                                )}
+                            </td>
+
+                            <td>
+                                ${statusHTML(
+                                    appointment.status
+                                )}
+                            </td>
+
+                            <td>
+
+                                ${
+                                    canCancel
+                                    ?
+                                    `
+                                    <button
+                                        class="small small-delete"
+                                        onclick="
+                                            cancelAppointment(
+                                                '${appointment.id}'
+                                            )
+                                        "
+                                    >
+                                        Cancel
+                                    </button>
+                                    `
+                                    :
+                                    "-"
+                                }
+
+                            </td>
+
+                        </tr>
+                        `;
+
+                }
+            );
+
+
+            if(
+                appointments.length === 0
+            ){
+
+                table.innerHTML =
+                    `
+                    <tr>
+                        <td
+                            colspan="7"
+                            class="empty"
+                        >
+                            No appointments yet.
+                        </td>
+                    </tr>
+                    `;
+
+            }
+
+        }
+
+
+        const recentTable =
+            document.getElementById(
+                "userRecentTable"
+            );
+
+
+        if(recentTable){
+
+            recentTable.innerHTML = "";
+
+
+            appointments
+                .slice(
+                    0,
+                    5
+                )
+                .forEach(
+                    appointment=>{
+
+                        recentTable.innerHTML +=
+                            `
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        ${escapeHTML(
+                                            appointment.queueNumber
+                                        )}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    ${escapeHTML(
+                                        appointment.departmentName
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHTML(
+                                        appointment.serviceName
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHTML(
+                                        appointment.appointmentDate
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${statusHTML(
+                                        appointment.status
+                                    )}
+                                </td>
+
+                            </tr>
+                            `;
+
+                    }
+                );
+
+
+            if(
+                appointments.length === 0
+            ){
+
+                recentTable.innerHTML =
+                    `
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="empty"
+                        >
+                            No recent appointments.
+                        </td>
+                    </tr>
+                    `;
+
+            }
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "User appointment error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+CANCEL APPOINTMENT
+========================================================= */
+
+window.cancelAppointment =
+async function(id){
+
+    if(
+        !confirm(
+            "Cancel this appointment?"
+        )
+    ){
+
+        return;
+    }
+
+
+    try{
+
+        await updateDoc(
+            doc(
+                db,
+                "appointments",
+                id
+            ),
+            {
+
+                status:
+                    "Cancelled"
+
+            }
+        );
+
+
+        await loadUserAppointments();
+
+
+        if(
+            currentRole === "admin"
+        ){
+
+            await loadAllAppointments();
+
+        }
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+USER QUEUE
+========================================================= */
+
+async function loadMyQueue(){
+
+    if(!currentUser){
+
+        return;
+    }
+
+
+    try{
+
+        const q =
+            query(
+                collection(
+                    db,
+                    "appointments"
+                ),
+                where(
+                    "userId",
+                    "==",
+                    currentUser.uid
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(q);
+
+
+        const active =
+            snapshot.docs
+                .map(
+                    d=>d.data()
+                )
+                .filter(
+                    data =>
+                        [
+                            "Waiting",
+                            "Confirmed",
+                            "Serving"
+                        ]
+                        .includes(
+                            data.status
+                        )
+                );
+
+
+        active.sort(
+            (a,b)=>
+                timestampValue(
+                    b.createdAt
+                )
+                -
+                timestampValue(
+                    a.createdAt
+                )
+        );
+
+
+        if(
+            active.length === 0
+        ){
+
+            setText(
+                "myQueueNumber",
+                "--"
+            );
+
+
+            setText(
+                "queueStatusText",
+                "No active queue"
+            );
+
+
+            return;
+
+        }
+
+
+        setText(
+            "myQueueNumber",
+            active[0].queueNumber
+        );
+
+
+        setText(
+            "queueStatusText",
+            "Current status: " +
+            active[0].status
+        );
+
+    }
+    catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================================
+PROFILE UPDATE
+========================================================= */
+
+window.updateProfile =
+async function(){
+
+    const name =
+        document
+            .getElementById(
+                "profileName"
+            )
+            .value
+            .trim();
+
+
+    const phone =
+        document
+            .getElementById(
+                "profilePhone"
+            )
+            .value
+            .trim();
+
+
+    if(!name){
+
+        alert(
+            "Name cannot be empty."
+        );
+
+        return;
+    }
+
+
+    try{
+
+        await updateDoc(
+            doc(
+                db,
+                "users",
+                currentUser.uid
+            ),
+            {
+
+                name,
+                phone
+
+            }
+        );
+
+
+        setText(
+            "currentUserName",
+            name
+        );
+
+
+        setText(
+            "avatarText",
+            name
+                .charAt(0)
+                .toUpperCase()
+        );
+
+
+        alert(
+            "Profile updated successfully."
+        );
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+ADMIN DATA
+========================================================= */
+
+async function loadAdminData(){
+
+    if(
+        currentRole !== "admin"
+    ){
+
+        return;
+
+    }
+
+
+    await loadUsers();
+
+    await loadAllAppointments();
+
+}
+
+
+window.refreshAdmin =
+async function(){
+
+    await loadAdminData();
+
+};
+
+
+/* =========================================================
+LOAD USERS
+========================================================= */
+
+async function loadUsers(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "users"
+                )
+            );
+
+
+        allUsers =
+            snapshot.docs.map(
+                d=>({
+                    id:d.id,
+                    ...d.data()
+                })
+            );
+
+
+        allUsers.sort(
+            (a,b)=>
+                timestampValue(
+                    b.createdAt
+                )
+                -
+                timestampValue(
+                    a.createdAt
+                )
+        );
+
+
+        const table =
+            document.getElementById(
+                "usersTable"
+            );
+
+
+        if(!table){
+
+            return;
+
+        }
+
+
+        table.innerHTML = "";
+
+
+        allUsers.forEach(
+            data=>{
+
+                table.innerHTML +=
+                    `
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(
+                                    data.name || "-"
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                data.email || "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                data.phone || "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                data.role || "user"
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatTimestamp(
+                                data.createdAt
+                            )}
+                        </td>
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="small small-edit"
+                                    onclick="
+                                        editUser(
+                                            '${data.id}'
+                                        )
+                                    "
+                                >
+                                    Edit
+                                </button>
+
+
+                                ${
+                                    data.id !==
+                                    currentUser?.uid
+                                    ?
+                                    `
+                                    <button
+                                        class="small small-delete"
+                                        onclick="
+                                            deleteUser(
+                                                '${data.id}'
+                                            )
+                                        "
+                                    >
+                                        Delete
+                                    </button>
+                                    `
+                                    :
+                                    ""
+                                }
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                    `;
+
+            }
+        );
+
+
+        if(
+            allUsers.length === 0
+        ){
+
+            table.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+                        No users found.
+                    </td>
+                </tr>
+                `;
+
+        }
+
+
+        setText(
+            "adminUsers",
+            allUsers.length
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "Users error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+FILTER USERS
+========================================================= */
+
+window.filterUsers =
+function(){
+
+    const search =
+        document
+            .getElementById(
+                "userSearch"
+            )
+            .value
+            .toLowerCase();
+
+
+    document
+        .querySelectorAll(
+            "#usersTable tr"
+        )
+        .forEach(
+            row=>{
+
+                row.style.display =
+                    row.textContent
+                        .toLowerCase()
+                        .includes(search)
+                    ? ""
+                    : "none";
+
+            }
+        );
+
+};
+
+
+/* =========================================================
+EDIT USER
+========================================================= */
+
+window.editUser =
+async function(id){
+
+    const userDoc =
+        await getDoc(
+            doc(
+                db,
+                "users",
+                id
+            )
+        );
+
+
+    if(
+        !userDoc.exists()
+    ){
+
+        return;
+
+    }
+
+
+    const data =
+        userDoc.data();
+
+
+    document
+        .getElementById(
+            "editUserId"
+        )
+        .value =
+        id;
+
+
+    document
+        .getElementById(
+            "editUserName"
+        )
+        .value =
+        data.name || "";
+
+
+    document
+        .getElementById(
+            "editUserPhone"
+        )
+        .value =
+        data.phone || "";
+
+
+    document
+        .getElementById(
+            "userModal"
+        )
+        .classList
+        .remove("hidden");
+
+};
+
+
+window.saveUserEdit =
+async function(){
+
+    const id =
+        document
+            .getElementById(
+                "editUserId"
+            )
+            .value;
+
+
+    const name =
+        document
+            .getElementById(
+                "editUserName"
+            )
+            .value
+            .trim();
+
+
+    const phone =
+        document
+            .getElementById(
+                "editUserPhone"
+            )
+            .value
+            .trim();
+
+
+    if(
+        !id ||
+        !name
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        await updateDoc(
+            doc(
+                db,
+                "users",
+                id
+            ),
+            {
+
+                name,
+                phone
+
+            }
+        );
+
+
+        closeUserModal();
+
+
+        await loadUsers();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+window.closeUserModal =
+function(){
+
+    document
+        .getElementById(
+            "userModal"
+        )
+        .classList
+        .add("hidden");
+
+};
+
+
+/* =========================================================
+DELETE USER PROFILE
+========================================================= */
+
+window.deleteUser =
+async function(id){
+
+    if(
+        id === currentUser?.uid
+    ){
+
+        alert(
+            "You cannot delete your own account here."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !confirm(
+            "Delete this user's Firestore profile?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "users",
+                id
+            )
+        );
+
+
+        await loadUsers();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+LOAD ALL APPOINTMENTS
+========================================================= */
+
+async function loadAllAppointments(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "appointments"
+                )
+            );
+
+
+        allAppointments =
+            snapshot.docs.map(
+                d=>({
+                    id:d.id,
+                    ...d.data()
+                })
+            );
+
+
+        allAppointments.sort(
+            (a,b)=>
+                timestampValue(
+                    b.createdAt
+                )
+                -
+                timestampValue(
+                    a.createdAt
+                )
+        );
+
+
+        const table =
+            document.getElementById(
+                "appointmentsTable"
+            );
+
+
+        if(!table){
+
+            return;
+
+        }
+
+
+        table.innerHTML = "";
+
+
+        let waiting = 0;
+        let completed = 0;
+
+
+        allAppointments.forEach(
+            appointment=>{
+
+                if(
+                    appointment.status ===
+                    "Waiting"
+                ){
+
+                    waiting++;
+
+                }
+
+
+                if(
+                    appointment.status ===
+                    "Completed"
+                ){
+
+                    completed++;
+
+                }
+
+
+                table.innerHTML +=
+                    `
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(
+                                    appointment.queueNumber
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.userName
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.departmentName
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.serviceName
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.appointmentDate
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.appointmentTime
+                            )}
+                        </td>
+
+                        <td>
+                            ${statusHTML(
+                                appointment.status
+                            )}
+                        </td>
+
+                        <td>
+
+                            <select
+                                class="control"
+                                style="
+                                    min-width:120px;
+                                    padding:7px
+                                "
+                                onchange="
+                                    updateAppointmentStatus(
+                                        '${appointment.id}',
+                                        this.value
+                                    )
+                                "
+                            >
+
+                                ${statusOptions(
+                                    appointment.status
+                                )}
+
+                            </select>
+
+
+                            <button
+                                class="small small-delete"
+                                style="margin-top:5px"
+                                onclick="
+                                    deleteAppointment(
+                                        '${appointment.id}'
+                                    )
+                                "
+                            >
+                                Delete
+                            </button>
+
+                        </td>
+
+                    </tr>
+                    `;
+
+            }
+        );
+
+
+        if(
+            allAppointments.length === 0
+        ){
+
+            table.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="8"
+                        class="empty"
+                    >
+                        No appointments found.
+                    </td>
+                </tr>
+                `;
+
+        }
+
+
+        setText(
+            "adminAppointments",
+            allAppointments.length
+        );
+
+
+        setText(
+            "adminWaiting",
+            waiting
+        );
+
+
+        setText(
+            "adminCompleted",
+            completed
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "Appointment error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+FILTER APPOINTMENTS
+========================================================= */
+
+window.filterAppointments =
+function(){
+
+    const search =
+        document
+            .getElementById(
+                "appointmentSearch"
+            )
+            .value
+            .toLowerCase();
+
+
+    document
+        .querySelectorAll(
+            "#appointmentsTable tr"
+        )
+        .forEach(
+            row=>{
+
+                row.style.display =
+                    row.textContent
+                        .toLowerCase()
+                        .includes(search)
+                    ? ""
+                    : "none";
+
+            }
+        );
+
+};
+
+
+/* =========================================================
+UPDATE APPOINTMENT
+========================================================= */
+
+window.updateAppointmentStatus =
+async function(
+    id,
+    status
+){
+
+    try{
+
+        await updateDoc(
+            doc(
+                db,
+                "appointments",
+                id
+            ),
+            {
+
+                status
+
+            }
+        );
+
+
+        await loadAllAppointments();
+
+        await loadUserAppointments();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+DELETE APPOINTMENT
+========================================================= */
+
+window.deleteAppointment =
+async function(id){
+
+    if(
+        !confirm(
+            "Delete this appointment?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "appointments",
+                id
+            )
+        );
+
+
+        await loadAllAppointments();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+QUEUE
+========================================================= */
+
+async function loadQueue(){
+
+    try{
+
+        const q =
+            query(
+                collection(
+                    db,
+                    "appointments"
+                ),
+                where(
+                    "status",
+                    "==",
+                    "Waiting"
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(q);
+
+
+        const queue =
+            snapshot.docs.map(
+                d=>({
+                    id:d.id,
+                    ...d.data()
+                })
+            );
+
+
+        queue.sort(
+            (a,b)=>
+                timestampValue(
+                    a.createdAt
+                )
+                -
+                timestampValue(
+                    b.createdAt
+                )
+        );
+
+
+        const table =
+            document.getElementById(
+                "queueTable"
+            );
+
+
+        if(!table){
+
+            return;
+
+        }
+
+
+        table.innerHTML = "";
+
+
+        queue.forEach(
+            appointment=>{
+
+                table.innerHTML +=
+                    `
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(
+                                    appointment.queueNumber
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.userName
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.departmentName
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.serviceName
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.appointmentDate
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                appointment.appointmentTime
+                            )}
+                        </td>
+
+                    </tr>
+                    `;
+
+            }
+        );
+
+
+        if(
+            queue.length === 0
+        ){
+
+            table.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="6"
+                        class="empty"
+                    >
+                        No customers are currently waiting.
+                    </td>
+                </tr>
+                `;
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Queue error:",
+            error
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+CALL NEXT CUSTOMER
+========================================================= */
+
+window.callNextCustomer =
+async function(){
+
+    try{
+
+        const q =
+            query(
+                collection(
+                    db,
+                    "appointments"
+                ),
+                where(
+                    "status",
+                    "==",
+                    "Waiting"
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(q);
+
+
+        const waiting =
+            snapshot.docs.map(
+                d=>({
+                    id:d.id,
+                    ...d.data()
+                })
+            );
+
+
+        waiting.sort(
+            (a,b)=>
+                timestampValue(
+                    a.createdAt
+                )
+                -
+                timestampValue(
+                    b.createdAt
+                )
+        );
+
+
+        if(
+            waiting.length === 0
+        ){
+
+            alert(
+                "No customers are waiting."
+            );
+
+            return;
+        }
+
+
+        const next =
+            waiting[0];
+
+
+        await updateDoc(
+            doc(
+                db,
+                "appointments",
+                next.id
+            ),
+            {
+
+                status:
+                    "Serving"
+
+            }
+        );
+
+
+        setText(
+            "currentQueue",
+            next.queueNumber
+        );
+
+
+        setText(
+            "currentQueueStatus",
+            "Now serving " +
+            next.userName
+        );
+
+
+        await loadQueue();
+
+        await loadAllAppointments();
+
+    }
+    catch(error){
+
+        alert(
+            getFirebaseError(
+                error
+            )
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+HELPERS
+========================================================= */
+
+function statusOptions(current){
+
+    const statuses = [
+        "Waiting",
+        "Confirmed",
+        "Serving",
+        "Completed",
+        "Cancelled"
+    ];
+
+
+    return statuses
+        .map(
+            status =>
+                `
+                <option
+                    value="${status}"
+                    ${
+                        current === status
+                        ? "selected"
+                        : ""
+                    }
+                >
+                    ${status}
+                </option>
+                `
+        )
+        .join("");
+
+}
+
+
+function statusHTML(status){
+
+    return `
+        <span
+            class="status ${statusClass(status)}"
+        >
+            ${escapeHTML(status || "Unknown")}
+        </span>
+    `;
+
+}
+
+
+function statusClass(status){
+
+    switch(status){
+
+        case "Waiting":
+            return "waiting";
+
+        case "Confirmed":
+            return "confirmed";
+
+        case "Serving":
+            return "serving";
+
+        case "Completed":
+            return "completed";
+
+        case "Cancelled":
+            return "cancelled";
+
+        default:
+            return "";
+
+    }
+
+}
+
+
+function timestampValue(timestamp){
+
+    if(
+        !timestamp ||
+        typeof timestamp.toMillis !==
+        "function"
+    ){
+
+        return 0;
+    }
+
+
+    return timestamp.toMillis();
+
+}
+
+
+function formatTimestamp(timestamp){
+
+    if(
+        !timestamp ||
+        typeof timestamp.toDate !==
+        "function"
+    ){
+
+        return "-";
+    }
+
+
+    return timestamp
+        .toDate()
+        .toLocaleDateString(
+            "en-IN"
+        );
+
+}
+
+
+function setText(
+    id,
+    value
+){
+
+    const element =
+        document.getElementById(id);
+
+
+    if(element){
+
+        element.textContent =
+            value;
+
+    }
+
+}
+
+
+function escapeHTML(value){
+
+    if(
+        value === undefined ||
+        value === null
+    ){
+
+        return "";
+    }
+
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+function getFirebaseError(error){
+
+    if(
+        !error
+    ){
+
+        return "Something went wrong.";
+
+    }
+
+
+    switch(error.code){
+
+        case "auth/email-already-in-use":
+            return "This email is already registered.";
+
+        case "auth/invalid-email":
+            return "Invalid email address.";
+
+        case "auth/weak-password":
+            return "Password must contain at least 6 characters.";
+
+        case "auth/invalid-credential":
+            return "Invalid email or password.";
+
+        case "auth/user-not-found":
+            return "User account not found.";
+
+        case "auth/wrong-password":
+            return "Incorrect password.";
+
+        case "permission-denied":
+            return "Firestore permission denied. Check Firestore Rules.";
+
+        default:
+            return error.message ||
+                "Something went wrong.";
+
+    }
+
+}
+
+
+/* =========================================================
+MINIMUM DATE
+========================================================= */
+
+document
+    .getElementById(
+        "appointmentDate"
+    )
+    .setAttribute(
+        "min",
+        new Date()
+            .toISOString()
+            .split("T")[0]
+    );
+
+</script>
+
+</body>
+</html>
